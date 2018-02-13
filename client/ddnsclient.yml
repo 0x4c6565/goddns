@@ -2,7 +2,7 @@
 
 host: home.ddns.lee.io
 ip_host: ip.lee.io
-interval: 5s
+interval: 60s
 api:
   url: http://localhost:8080
   auth_key: xde@bQ9+y(QN7z^8Qmij8c@Hh~~iTc6JFdLYDdvOPkx6E(m6%7GaOmz^DVp$%jh+
