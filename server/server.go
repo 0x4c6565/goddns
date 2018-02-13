@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/Lee303/goddns/lib"
 	"github.com/miekg/dns"
@@ -12,12 +11,12 @@ import (
 type Server struct {
 	storage   Storage
 	Zone      string
-	Port      int
 	dnsServer *dns.Server
+	Protocol  string
 }
 
-func NewServer(zone string, port int, storage Storage) *Server {
-	return &Server{Zone: zone, Port: port, storage: storage}
+func NewServer(zone string, storage Storage, protocol string) *Server {
+	return &Server{Zone: zone, storage: storage, Protocol: protocol}
 }
 
 func (s *Server) parseQuery(m *dns.Msg) {
@@ -59,8 +58,8 @@ func (s *Server) handleDnsRequest(w dns.ResponseWriter, r *dns.Msg) {
 func (s *Server) Start() {
 	dns.HandleFunc(s.Zone, s.handleDnsRequest)
 
-	s.dnsServer = &dns.Server{Addr: ":" + strconv.Itoa(s.Port), Net: "udp"}
-	log.Printf("Starting server at %d\n", s.Port)
+	s.dnsServer = &dns.Server{Addr: ":53", Net: s.Protocol}
+	log.Printf("Starting server at %s 53\n", s.Protocol)
 	err := s.dnsServer.ListenAndServe()
 	if err != nil {
 		panic(fmt.Errorf("Failed to start server: %s\n ", err))

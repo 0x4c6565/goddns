@@ -11,10 +11,12 @@ func main() {
 
 	sanitizedZone := lib.SanitizeHost(config.Zone)
 	api := NewAPI(config.API.Port, config.API.AuthKey, sanitizedZone, storage)
-	server := NewServer(sanitizedZone, config.Port, storage)
+	udpServer := NewServer(sanitizedZone, storage, "udp")
+	tcpServer := NewServer(sanitizedZone, storage, "tcp")
 
 	go api.Start()
-	go server.Start()
+	go udpServer.Start()
+	go tcpServer.Start()
 	select {}
 }
 

@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-yaml/yaml"
 	"io/ioutil"
+
+	"github.com/go-yaml/yaml"
 )
 
 type Config struct {
 	Zone string    `yaml:"zone"`
-	Port int       `yaml:"port"`
 	API  APIConfig `yaml:"api"`
 }
 
