@@ -27,9 +27,6 @@ type Poller struct {
 	Interval      time.Duration
 }
 
-var lastIPv4Address string
-var lastIPv6Address string
-
 func main() {
 	config, err := LoadConfig("ddnsclient.yml")
 	check(err)
@@ -70,11 +67,18 @@ func main() {
 }
 
 func (p *Poller) Start() {
+	first := true
 	for {
+
+		if first != true {
+			time.Sleep(p.Interval)
+		}
+		first = false
+
 		newIPAddress, err := p.getIPAddress()
 		if err != nil {
 			log.Printf("failed to retrieve ip address: %s", err)
-			return
+			continue
 		}
 
 		if newIPAddress != p.LastIPAddress {
@@ -84,15 +88,13 @@ func (p *Poller) Start() {
 			err = p.updateDDNSHost(newIPAddress)
 			if err != nil {
 				log.Printf("failed to update DDNS host: %s", err)
-				return
+				continue
 			}
 
 			log.Print("successfully updated DDNS host")
 
 			p.LastIPAddress = newIPAddress
 		}
-
-		time.Sleep(p.Interval)
 	}
 }
 
