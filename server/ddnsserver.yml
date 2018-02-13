@@ -1,7 +1,6 @@
 ---
 
 zone: ddns.lee.io
-port: 53
 api:
   port: 8080
   auth_key: xde@bQ9+y(QN7z^8Qmij8c@Hh~~iTc6JFdLYDdvOPkx6E(m6%7GaOmz^DVp$%jh+
