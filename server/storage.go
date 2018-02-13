@@ -1,6 +1,6 @@
 package main
 
-import "ddns/lib"
+import "github.com/Lee303/goddns/lib"
 
 type Storage interface {
 	Get(host string, recordType lib.DDNSRecordType) string

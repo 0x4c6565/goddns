@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"ddns/lib"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +13,8 @@ import (
 	"os/signal"
 	"strings"
 	"time"
+
+	"github.com/Lee303/goddns/lib"
 )
 
 type Poller struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"ddns/lib"
 	"fmt"
 	"log"
 	"strconv"
 
+	"github.com/Lee303/goddns/lib"
 	"github.com/miekg/dns"
 )
 

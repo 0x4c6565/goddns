@@ -1,6 +1,6 @@
 package main
 
-import "ddns/lib"
+import "github.com/Lee303/goddns/lib"
 
 func main() {
 	config, err := LoadConfig("ddnsserver.yml")

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"ddns/lib"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"sync"
+
+	"github.com/Lee303/goddns/lib"
 )
 
 type FlatFileDDNSRecord struct {

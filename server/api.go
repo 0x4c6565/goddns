@@ -1,13 +1,14 @@
 package main
 
 import (
-	"ddns/lib"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/Lee303/goddns/lib"
 
 	"github.com/gorilla/mux"
 )
