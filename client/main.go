@@ -100,12 +100,11 @@ func (p *Poller) Start() {
 
 func (p *Poller) updateDDNSHost(ipAddress string) error {
 
-	payload := lib.DDNSRecordBody{
+	payloadJSON, err := json.Marshal(lib.DDNSRecordBody{
 		AuthKey:    p.APIAuthKey,
 		IPAddress:  ipAddress,
 		RecordType: p.RecordType,
-	}
-	payloadJSON, err := json.Marshal(payload)
+	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload: %s", err)
 	}
