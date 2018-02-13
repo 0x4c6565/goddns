@@ -165,7 +165,7 @@ func (p *Poller) getIPAddress() (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("non-200 response): %d", resp.StatusCode)
+		return "", fmt.Errorf("non-200 response: %d", resp.StatusCode)
 	}
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
