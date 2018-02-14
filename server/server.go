@@ -25,7 +25,7 @@ func (s *Server) parseQuery(m *dns.Msg) {
 		case dns.TypeA:
 			ip := s.storage.Get(q.Name, lib.A)
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s A %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf("%s 60 A %s", q.Name, ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
@@ -33,7 +33,7 @@ func (s *Server) parseQuery(m *dns.Msg) {
 		case dns.TypeAAAA:
 			ip := s.storage.Get(q.Name, lib.AAAA)
 			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s AAAA %s", q.Name, ip))
+				rr, err := dns.NewRR(fmt.Sprintf("%s 60 AAAA %s", q.Name, ip))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
