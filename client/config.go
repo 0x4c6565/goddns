@@ -11,6 +11,8 @@ type Config struct {
 	Host     string    `yaml:"host"`
 	IPHost   string    `yaml:"ip_host"`
 	Interval string    `yaml:"interval"`
+	IPv4     bool      `yaml:"ipv4"`
+	IPv6     bool      `yaml:"ipv6"`
 	API      APIConfig `yaml:"api"`
 }
 

@@ -34,24 +34,6 @@ func main() {
 	interval, err := time.ParseDuration(config.Interval)
 	check(err)
 
-	ipv4Poller := &Poller{
-		IPHost:     config.IPHost,
-		Host:       config.Host,
-		APIURL:     config.API.URL,
-		APIAuthKey: config.API.AuthKey,
-		RecordType: lib.A,
-		Interval:   interval,
-	}
-
-	ipv6Poller := &Poller{
-		IPHost:     config.IPHost,
-		Host:       config.Host,
-		APIURL:     config.API.URL,
-		APIAuthKey: config.API.AuthKey,
-		RecordType: lib.AAAA,
-		Interval:   interval,
-	}
-
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals)
 	go func() {
@@ -60,8 +42,35 @@ func main() {
 		os.Exit(0)
 	}()
 
-	go ipv4Poller.Start()
-	go ipv6Poller.Start()
+	if !config.IPv4 && !config.IPv6 {
+		panic("at least one protocol should be provided")
+	}
+
+	if config.IPv4 {
+		ipv4Poller := &Poller{
+			IPHost:     config.IPHost,
+			Host:       config.Host,
+			APIURL:     config.API.URL,
+			APIAuthKey: config.API.AuthKey,
+			RecordType: lib.A,
+			Interval:   interval,
+		}
+
+		go ipv4Poller.Start()
+	}
+
+	if config.IPv6 {
+		ipv6Poller := &Poller{
+			IPHost:     config.IPHost,
+			Host:       config.Host,
+			APIURL:     config.API.URL,
+			APIAuthKey: config.API.AuthKey,
+			RecordType: lib.AAAA,
+			Interval:   interval,
+		}
+
+		go ipv6Poller.Start()
+	}
 
 	select {}
 }
