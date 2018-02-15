@@ -2,11 +2,13 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Lee303/goddns/lib"
 )
 
 func main() {
+	log.SetOutput(os.Stdout)
 	config, err := LoadConfig("ddnsserver.yml")
 	check(err)
 
