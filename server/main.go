@@ -1,6 +1,10 @@
 package main
 
-import "github.com/Lee303/goddns/lib"
+import (
+	"log"
+
+	"github.com/Lee303/goddns/lib"
+)
 
 func main() {
 	config, err := LoadConfig("ddnsserver.yml")
@@ -22,6 +26,6 @@ func main() {
 
 func check(err error) {
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

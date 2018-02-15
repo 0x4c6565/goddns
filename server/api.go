@@ -68,6 +68,6 @@ func (a *API) Start() {
 	log.Printf("Starting API at %d\n", a.port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", a.port), a.router)
 	if err != nil {
-		panic(fmt.Errorf("Failed to start API listener: %s\n ", err))
+		log.Fatalf("Failed to start API listener: %s\n ", err)
 	}
 }

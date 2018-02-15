@@ -62,6 +62,6 @@ func (s *Server) Start() {
 	log.Printf("Starting server at %s 53\n", s.Protocol)
 	err := s.dnsServer.ListenAndServe()
 	if err != nil {
-		panic(fmt.Errorf("Failed to start server: %s\n ", err))
+		log.Fatalf("Failed to start server: %s\n ", err)
 	}
 }
