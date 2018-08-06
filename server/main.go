@@ -5,11 +5,17 @@ import (
 	"os"
 
 	"github.com/Lee303/goddns/lib"
+	"flag"
 )
 
 func main() {
 	log.SetOutput(os.Stdout)
-	config, err := LoadConfig("ddnsserver.yml")
+
+	var configPath string
+	flag.StringVar(&configPath, "config", "ddnsserver.yml", "Path to config file")
+	flag.Parse()
+
+	config, err := LoadConfig(configPath)
 	check(err)
 
 	storage, err := NewFlatFileStorage("records.json")
