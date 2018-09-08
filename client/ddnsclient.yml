@@ -1,7 +1,7 @@
 ---
 
 host: home.ddns.lee.io
-ip_host: ip.lee.io
+ip_host: http://ip.lee.io
 ipv4: true
 ipv6: true
 interval: 60s
