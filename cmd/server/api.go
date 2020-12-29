@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Lee303/goddns/lib"
-
+	"github.com/0x4c6565/goddns/pkg/helper"
 	"github.com/gorilla/mux"
 )
 
@@ -26,31 +25,35 @@ func NewAPI(port int, authKey string, zone string, storage Storage) *API {
 	return &API{port: port, authKey: authKey, zone: zone, storage: storage}
 }
 
-func (a *API) UpdateDDNSRecordEndpoint(w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
+func (a *API) UpdateDDNSRecordEndpoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
 
-	var record lib.DDNSRecordBody
-	_ = json.NewDecoder(req.Body).Decode(&record)
+	var req DDNSUpdateRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
 
-	if a.authKey != record.AuthKey {
+	if a.authKey != req.AuthKey {
 		w.WriteHeader(403)
 		return
 	}
 
-	sanitizedHost := lib.SanitizeHost(params["host"])
+	sanitizedHost := helper.SanitizeHost(params["host"])
 
-	ip := net.ParseIP(record.IPAddress)
+	ip := net.ParseIP(req.Record.IPAddress)
 	if ip == nil || !strings.HasSuffix(sanitizedHost, a.zone) {
 		w.WriteHeader(400)
 		return
 	}
 
-	if (record.RecordType == lib.A && ip.To4() == nil) || (record.RecordType == lib.AAAA && ip.To16() == nil) {
+	if (req.Record.Type == A && ip.To4() == nil) || (req.Record.Type == AAAA && ip.To16() == nil) {
 		w.WriteHeader(400)
 		return
 	}
 
-	err := a.storage.Update(sanitizedHost, record.IPAddress, record.RecordType)
+	err = a.storage.Update(sanitizedHost, req.Record)
 	if err != nil {
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(err)

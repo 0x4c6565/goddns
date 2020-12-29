@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Lee303/goddns/lib"
+	server "github.com/0x4c6565/goddns/cmd/server"
 )
 
 type Poller struct {
@@ -22,8 +22,8 @@ type Poller struct {
 	Host          string
 	APIURL        string
 	APIAuthKey    string
-	RecordType    lib.DDNSRecordType
-	LastIPAddress string
+	RecordType    server.DDNSRecordType
+	lastIPAddress string
 	Interval      time.Duration
 }
 
@@ -52,7 +52,7 @@ func main() {
 			Host:       config.Host,
 			APIURL:     config.API.URL,
 			APIAuthKey: config.API.AuthKey,
-			RecordType: lib.A,
+			RecordType: server.A,
 			Interval:   interval,
 		}
 
@@ -65,7 +65,7 @@ func main() {
 			Host:       config.Host,
 			APIURL:     config.API.URL,
 			APIAuthKey: config.API.AuthKey,
-			RecordType: lib.AAAA,
+			RecordType: server.AAAA,
 			Interval:   interval,
 		}
 
@@ -90,7 +90,7 @@ func (p *Poller) Start() {
 			continue
 		}
 
-		if newIPAddress != p.LastIPAddress {
+		if newIPAddress != p.lastIPAddress {
 
 			log.Printf("updating DDNS host %s with new IP address %s", p.Host, newIPAddress)
 
@@ -102,17 +102,19 @@ func (p *Poller) Start() {
 
 			log.Print("successfully updated DDNS host")
 
-			p.LastIPAddress = newIPAddress
+			p.lastIPAddress = newIPAddress
 		}
 	}
 }
 
 func (p *Poller) updateDDNSHost(ipAddress string) error {
 
-	payloadJSON, err := json.Marshal(lib.DDNSRecordBody{
-		AuthKey:    p.APIAuthKey,
-		IPAddress:  ipAddress,
-		RecordType: p.RecordType,
+	payloadJSON, err := json.Marshal(server.DDNSUpdateRequest{
+		AuthKey: p.APIAuthKey,
+		Record: server.DDNSRecord{
+			IPAddress: ipAddress,
+			Type:      p.RecordType,
+		},
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload: %s", err)
@@ -140,7 +142,7 @@ func (p *Poller) getIPAddress() (string, error) {
 	var ipAddress string
 	var err error
 	switch p.RecordType {
-	case lib.A:
+	case server.A:
 		ipAddr, err := net.ResolveIPAddr("ip4", p.IPHost)
 		if err != nil {
 			return "", err
@@ -148,7 +150,7 @@ func (p *Poller) getIPAddress() (string, error) {
 
 		ipAddress = ipAddr.IP.String()
 		break
-	case lib.AAAA:
+	case server.AAAA:
 		ipAddr, err := net.ResolveIPAddr("ip6", p.IPHost)
 		if err != nil {
 			return "", err

@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/Lee303/goddns/lib"
 	"flag"
+
+	"github.com/0x4c6565/goddns/pkg/helper"
 )
 
 func main() {
@@ -21,14 +22,20 @@ func main() {
 	storage, err := NewFlatFileStorage("records.json")
 	check(err)
 
-	sanitizedZone := lib.SanitizeHost(config.Zone)
+	sanitizedZone := helper.SanitizeHost(config.Zone)
 	api := NewAPI(config.API.Port, config.API.AuthKey, sanitizedZone, storage)
-	udpServer := NewServer(sanitizedZone, storage, "udp")
-	tcpServer := NewServer(sanitizedZone, storage, "tcp")
 
 	go api.Start()
-	go udpServer.Start()
-	go tcpServer.Start()
+
+	if config.ListenUDP {
+		udpServer := NewServer(sanitizedZone, storage, "udp")
+		go udpServer.Start()
+	}
+
+	if config.ListenTCP {
+		tcpServer := NewServer(sanitizedZone, storage, "tcp")
+		go tcpServer.Start()
+	}
 	select {}
 }
 

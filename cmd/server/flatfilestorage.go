@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"sync"
-
-	"github.com/Lee303/goddns/lib"
 )
 
 type FlatFileDDNSRecord struct {
@@ -16,7 +14,7 @@ type FlatFileDDNSRecord struct {
 
 type FlatFileStorage struct {
 	path    string
-	mtx     sync.Mutex
+	mtx     *sync.Mutex
 	records map[string]*FlatFileDDNSRecord
 }
 
@@ -26,26 +24,33 @@ func NewFlatFileStorage(path string) (FlatFileStorage, error) {
 		return FlatFileStorage{}, err
 	}
 
-	storage := FlatFileStorage{path: path}
+	storage := FlatFileStorage{path: path, mtx: &sync.Mutex{}}
 	json.Unmarshal(file, &storage.records)
 
 	return storage, nil
 }
 
-func (s FlatFileStorage) Get(host string, recordType lib.DDNSRecordType) string {
+func (s FlatFileStorage) Get(host string, recordType DDNSRecordType) (DDNSRecord, bool) {
 	record, exists := s.records[host]
 	if exists {
 		switch recordType {
-		case lib.A:
-			return record.A
-		case lib.AAAA:
-			return record.AAAA
+		case A:
+			return DDNSRecord{
+				IPAddress: record.A,
+				Type:      A,
+			}, true
+		case AAAA:
+			return DDNSRecord{
+				IPAddress: record.AAAA,
+				Type:      AAAA,
+			}, true
 		}
 	}
-	return ""
+
+	return DDNSRecord{}, false
 }
 
-func (s FlatFileStorage) Update(host string, ipAddress string, recordType lib.DDNSRecordType) error {
+func (s FlatFileStorage) Update(host string, record DDNSRecord) error {
 	if s.records == nil {
 		s.records = map[string]*FlatFileDDNSRecord{}
 	}
@@ -54,12 +59,12 @@ func (s FlatFileStorage) Update(host string, ipAddress string, recordType lib.DD
 		s.records[host] = &FlatFileDDNSRecord{}
 	}
 
-	switch recordType {
-	case lib.A:
-		s.records[host].A = ipAddress
+	switch record.Type {
+	case A:
+		s.records[host].A = record.IPAddress
 		break
-	case lib.AAAA:
-		s.records[host].AAAA = ipAddress
+	case AAAA:
+		s.records[host].AAAA = record.IPAddress
 		break
 	}
 
@@ -68,12 +73,12 @@ func (s FlatFileStorage) Update(host string, ipAddress string, recordType lib.DD
 
 	json, err := json.Marshal(s.records)
 	if err != nil {
-		return fmt.Errorf("failed to marshal JSON for storage: %s", err)
+		return fmt.Errorf("failed to marshal JSON for storage: %w", err)
 	}
 
 	err = ioutil.WriteFile(s.path, json, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write file for storage: %s", err)
+		return fmt.Errorf("failed to write file for storage: %w", err)
 	}
 
 	return nil

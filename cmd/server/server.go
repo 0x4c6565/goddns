@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Lee303/goddns/lib"
 	"github.com/miekg/dns"
 )
 
@@ -23,17 +22,17 @@ func (s *Server) parseQuery(m *dns.Msg) {
 	for _, q := range m.Question {
 		switch q.Qtype {
 		case dns.TypeA:
-			ip := s.storage.Get(q.Name, lib.A)
-			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s 60 A %s", q.Name, ip))
+			record, exists := s.storage.Get(q.Name, A)
+			if exists {
+				rr, err := dns.NewRR(fmt.Sprintf("%s 60 A %s", q.Name, record.IPAddress))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
 			}
 		case dns.TypeAAAA:
-			ip := s.storage.Get(q.Name, lib.AAAA)
-			if ip != "" {
-				rr, err := dns.NewRR(fmt.Sprintf("%s 60 AAAA %s", q.Name, ip))
+			record, exists := s.storage.Get(q.Name, AAAA)
+			if exists {
+				rr, err := dns.NewRR(fmt.Sprintf("%s 60 AAAA %s", q.Name, record.IPAddress))
 				if err == nil {
 					m.Answer = append(m.Answer, rr)
 				}
@@ -42,7 +41,7 @@ func (s *Server) parseQuery(m *dns.Msg) {
 	}
 }
 
-func (s *Server) handleDnsRequest(w dns.ResponseWriter, r *dns.Msg) {
+func (s *Server) handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
 	m := new(dns.Msg)
 	m.SetReply(r)
 	m.Compress = false
@@ -56,7 +55,7 @@ func (s *Server) handleDnsRequest(w dns.ResponseWriter, r *dns.Msg) {
 }
 
 func (s *Server) Start() {
-	dns.HandleFunc(s.Zone, s.handleDnsRequest)
+	dns.HandleFunc(s.Zone, s.handleDNSRequest)
 
 	s.dnsServer = &dns.Server{Addr: ":53", Net: s.Protocol}
 	log.Printf("Starting server at %s 53\n", s.Protocol)

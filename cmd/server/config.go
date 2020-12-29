@@ -8,8 +8,10 @@ import (
 )
 
 type Config struct {
-	Zone string    `yaml:"zone"`
-	API  APIConfig `yaml:"api"`
+	Zone      string    `yaml:"zone"`
+	ListenTCP bool      `yaml:"listen_tcp"`
+	ListenUDP bool      `yaml:"listen_udp"`
+	API       APIConfig `yaml:"api"`
 }
 
 type APIConfig struct {
@@ -27,7 +29,7 @@ func LoadConfig(path string) (Config, error) {
 
 	err = yaml.Unmarshal([]byte(file), &config)
 	if err != nil {
-		return Config{}, fmt.Errorf("failed to unmarshal config: %s\n", err)
+		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
 	return config, nil
