@@ -14,7 +14,8 @@ import (
 	"strings"
 	"time"
 
-	server "github.com/0x4c6565/goddns/cmd/server"
+	"github.com/0x4c6565/goddns/pkg/model"
+	"github.com/0x4c6565/goddns/pkg/request"
 )
 
 type Poller struct {
@@ -22,7 +23,7 @@ type Poller struct {
 	Host          string
 	APIURL        string
 	APIAuthKey    string
-	RecordType    server.DDNSRecordType
+	RecordType    model.DDNSRecordType
 	lastIPAddress string
 	Interval      time.Duration
 }
@@ -52,7 +53,7 @@ func main() {
 			Host:       config.Host,
 			APIURL:     config.API.URL,
 			APIAuthKey: config.API.AuthKey,
-			RecordType: server.A,
+			RecordType: model.A,
 			Interval:   interval,
 		}
 
@@ -65,7 +66,7 @@ func main() {
 			Host:       config.Host,
 			APIURL:     config.API.URL,
 			APIAuthKey: config.API.AuthKey,
-			RecordType: server.AAAA,
+			RecordType: model.AAAA,
 			Interval:   interval,
 		}
 
@@ -109,9 +110,9 @@ func (p *Poller) Start() {
 
 func (p *Poller) updateDDNSHost(ipAddress string) error {
 
-	payloadJSON, err := json.Marshal(server.DDNSUpdateRequest{
+	payloadJSON, err := json.Marshal(request.DDNSUpdateRequest{
 		AuthKey: p.APIAuthKey,
-		Record: server.DDNSRecord{
+		Record: model.DDNSRecord{
 			IPAddress: ipAddress,
 			Type:      p.RecordType,
 		},
@@ -142,7 +143,7 @@ func (p *Poller) getIPAddress() (string, error) {
 	var ipAddress string
 	var err error
 	switch p.RecordType {
-	case server.A:
+	case model.A:
 		ipAddr, err := net.ResolveIPAddr("ip4", p.IPHost)
 		if err != nil {
 			return "", err
@@ -150,7 +151,7 @@ func (p *Poller) getIPAddress() (string, error) {
 
 		ipAddress = ipAddr.IP.String()
 		break
-	case server.AAAA:
+	case model.AAAA:
 		ipAddr, err := net.ResolveIPAddr("ip6", p.IPHost)
 		if err != nil {
 			return "", err

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/0x4c6565/goddns/pkg/model"
 	"github.com/miekg/dns"
 )
 
@@ -22,7 +23,7 @@ func (s *Server) parseQuery(m *dns.Msg) {
 	for _, q := range m.Question {
 		switch q.Qtype {
 		case dns.TypeA:
-			record, exists := s.storage.Get(q.Name, A)
+			record, exists := s.storage.Get(q.Name, model.A)
 			if exists {
 				rr, err := dns.NewRR(fmt.Sprintf("%s 60 A %s", q.Name, record.IPAddress))
 				if err == nil {
@@ -30,7 +31,7 @@ func (s *Server) parseQuery(m *dns.Msg) {
 				}
 			}
 		case dns.TypeAAAA:
-			record, exists := s.storage.Get(q.Name, AAAA)
+			record, exists := s.storage.Get(q.Name, model.AAAA)
 			if exists {
 				rr, err := dns.NewRR(fmt.Sprintf("%s 60 AAAA %s", q.Name, record.IPAddress))
 				if err == nil {

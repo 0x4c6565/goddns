@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/0x4c6565/goddns/pkg/helper"
+	"github.com/0x4c6565/goddns/pkg/model"
+	"github.com/0x4c6565/goddns/pkg/request"
 	"github.com/gorilla/mux"
 )
 
@@ -28,7 +30,7 @@ func NewAPI(port int, authKey string, zone string, storage Storage) *API {
 func (a *API) UpdateDDNSRecordEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	var req DDNSUpdateRequest
+	var req request.DDNSUpdateRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(400)
@@ -48,7 +50,7 @@ func (a *API) UpdateDDNSRecordEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if (req.Record.Type == A && ip.To4() == nil) || (req.Record.Type == AAAA && ip.To16() == nil) {
+	if (req.Record.Type == model.A && ip.To4() == nil) || (req.Record.Type == model.AAAA && ip.To16() == nil) {
 		w.WriteHeader(400)
 		return
 	}

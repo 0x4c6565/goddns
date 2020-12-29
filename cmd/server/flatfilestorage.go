@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"sync"
+
+	"github.com/0x4c6565/goddns/pkg/model"
 )
 
 type FlatFileDDNSRecord struct {
@@ -30,27 +32,27 @@ func NewFlatFileStorage(path string) (FlatFileStorage, error) {
 	return storage, nil
 }
 
-func (s FlatFileStorage) Get(host string, recordType DDNSRecordType) (DDNSRecord, bool) {
+func (s FlatFileStorage) Get(host string, recordType model.DDNSRecordType) (model.DDNSRecord, bool) {
 	record, exists := s.records[host]
 	if exists {
 		switch recordType {
-		case A:
-			return DDNSRecord{
+		case model.A:
+			return model.DDNSRecord{
 				IPAddress: record.A,
-				Type:      A,
+				Type:      model.A,
 			}, true
-		case AAAA:
-			return DDNSRecord{
+		case model.AAAA:
+			return model.DDNSRecord{
 				IPAddress: record.AAAA,
-				Type:      AAAA,
+				Type:      model.AAAA,
 			}, true
 		}
 	}
 
-	return DDNSRecord{}, false
+	return model.DDNSRecord{}, false
 }
 
-func (s FlatFileStorage) Update(host string, record DDNSRecord) error {
+func (s FlatFileStorage) Update(host string, record model.DDNSRecord) error {
 	if s.records == nil {
 		s.records = map[string]*FlatFileDDNSRecord{}
 	}
@@ -60,10 +62,10 @@ func (s FlatFileStorage) Update(host string, record DDNSRecord) error {
 	}
 
 	switch record.Type {
-	case A:
+	case model.A:
 		s.records[host].A = record.IPAddress
 		break
-	case AAAA:
+	case model.AAAA:
 		s.records[host].AAAA = record.IPAddress
 		break
 	}
